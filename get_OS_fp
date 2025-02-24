@@ -1,0 +1,29 @@
+import requests
+
+def get_floor_price(asset_contract_address):
+    url = f"https://api.opensea.io/api/v1/assets"
+    params = {
+        "asset_contract_address": asset_contract_address,
+        "order_direction": "asc",
+        "limit": 1
+    }
+    headers = {
+        "Accept": "application/json",
+        "X-API-KEY": "YOUR_OPENSEA_API_KEY"  # Replace with your OpenSea API key
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if data["assets"]:
+            return data["assets"][0]["sell_orders"][0]["current_price"]
+        else:
+            return "No assets found"
+    else:
+        return f"Error: {response.status_code}"
+
+# Example usage
+contract_address = "0xYourNFTContractAddress"  # Replace with your NFT contract address
+floor_price = get_floor_price(contract_address)
+print(f"Floor price: {floor_price}")
