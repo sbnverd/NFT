@@ -1,0 +1,67 @@
+import requests
+from web3 import Web3
+
+# 設定
+OPENSEA_API_KEY = "YOUR_OPENSEA_API_KEY"  # OpenSea APIキー
+ASSET_CONTRACT_ADDRESS = "0xYourNFTContractAddress"  # NFTコントラクトアドレス
+WALLET_PRIVATE_KEY = "your_private_key"  # ウォレットのプライベートキー
+WALLET_ADDRESS = "your_wallet_address"  # ウォレットのアドレス
+WEB3_PROVIDER = "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID"  # InfuraプロジェクトID
+FLOOR_PRICE_LIMIT = 0.1  # フロア価格の制限 (ETH)
+
+def get_floor_price(asset_contract_address, api_key):
+    url = f"https://api.opensea.io/api/v1/assets"
+    params = {
+        "asset_contract_address": asset_contract_address,
+        "order_direction": "asc",
+        "limit": 1
+    }
+    headers = {
+        "Accept": "application/json",
+        "X-API-KEY": api_key
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        if data["assets"]:
+            return float(data["assets"][0]["sell_orders"][0]["current_price"]) / (10 ** 18)
+        else:
+            return None
+    else:
+        print(f"Error: {response.status_code}")
+        return None
+
+def buy_nft(asset_contract_address, token_id, price, wallet_address, private_key, provider_url):
+    web3 = Web3(Web3.HTTPProvider(provider_url))
+    if web3.isConnected():
+        print("Connected to Ethereum network")
+    else:
+        print("Failed to connect to Ethereum network")
+        return
+
+    account = web3.eth.account.privateKeyToAccount(private_key)
+    nonce = web3.eth.getTransactionCount(account.address)
+    
+    # NFT購入のためのトランザクションの作成
+    transaction = {
+        'to': asset_contract_address,
+        'value': Web3.toWei(price, 'ether'),
+        'gas': 2000000,
+        'gasPrice': web3.toWei('50', 'gwei'),
+        'nonce': nonce,
+        'data': web3.toHex(b'')  # 実際のNFT購入には異なるデータが必要です
+    }
+    
+    signed_txn = web3.eth.account.signTransaction(transaction, private_key)
+    tx_hash = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    print(f"Transaction hash: {web3.toHex(tx_hash)}")
+
+# フロア価格を取得して、条件を満たせば購入
+floor_price = get_floor_price(ASSET_CONTRACT_ADDRESS, OPENSEA_API_KEY)
+if floor_price and floor_price <= FLOOR_PRICE_LIMIT:
+    print(f"Floor price: {floor_price} ETH, below the limit of {FLOOR_PRICE_LIMIT} ETH")
+    token_id = "1"  # 購入したいNFTのトークンID（ここでは例として1を使用）
+    buy_nft(ASSET_CONTRACT_ADDRESS, token_id, floor_price, WALLET_ADDRESS, WALLET_PRIVATE_KEY, WEB3_PROVIDER)
+else:
+    print(f"Floor price: {floor_price} ETH, above the limit of {FLOOR_PRICE_LIMIT} ETH")
