@@ -1,3 +1,10 @@
+# Example usage
+#contract_address = "0xYourNFTContractAddress"  # Replace with your NFT contract address
+#floor_price = get_floor_price(contract_address)
+#print(f"Floor price: {floor_price}")
+
+
+
 import requests
 
 def get_floor_price(asset_contract_address):
@@ -23,7 +30,3 @@ def get_floor_price(asset_contract_address):
     else:
         return f"Error: {response.status_code}"
 
-# Example usage
-contract_address = "0xYourNFTContractAddress"  # Replace with your NFT contract address
-floor_price = get_floor_price(contract_address)
-print(f"Floor price: {floor_price}")
