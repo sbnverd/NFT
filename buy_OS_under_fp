@@ -1,7 +1,7 @@
 import requests
 from web3 import Web3
 
-# 設定
+# 各種変数設定
 OPENSEA_API_KEY = "YOUR_OPENSEA_API_KEY"  # OpenSea APIキー
 ASSET_CONTRACT_ADDRESS = "0xYourNFTContractAddress"  # NFTコントラクトアドレス
 WALLET_PRIVATE_KEY = "your_private_key"  # ウォレットのプライベートキー
