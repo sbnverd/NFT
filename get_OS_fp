@@ -1,8 +1,8 @@
-# Example usage
-#contract_address = "0xYourNFTContractAddress"  # Replace with your NFT contract address
-#floor_price = get_floor_price(contract_address)
-#print(f"Floor price: {floor_price}")
-
+#Example usage
+# contract_address = "0xYourNFTContractAddress"  # Replace with your NFT contract address
+# floor_price = get_floor_price(contract_address)
+# print(f"Floor price: {floor_price}")
+#
 
 
 import requests
